@@ -4,14 +4,8 @@ const port = 4000;
 const http = require("http");
 const { Server } = require("socket.io");
 const server = http.createServer(app);
-
-// Lägg till cors med socket.io
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
+const messageModel = require("./models/messageData.model");
+const roomModel = require("./models/roomData.model");
 
 const rooms = {
   default: {
@@ -27,68 +21,76 @@ const username = {
   },
 };
 
+// Lägg till cors med socket.io
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
 // socket connection / anslutning.
 io.on("connection", (socket) => {
-  console.log(`Socket med id ${socket.id} har anslutit`);
+  console.log(`${socket.id} har anslutit`);
+
+  // Skapa rum med hjälp av socket.on.
+  socket.on("create_room", (room) => {
+    console.log(`Rum "${room}" har skapats`);
+
+    const timestamp = Date();
+
+    roomModel.addRoom(timestamp);
+
+    // Kallar på rum och skriver ut rooms(?).
+    socket.emit("creat_room", rooms);
+  });
 
   // socket.io | socket.join room
-  socket.on("join_room", (data) => {
-    socket.join(rooms);
-    console.log(`User ${username.data} har gått med i rum: ${data.room}`);
-    console.log(socket.username);
+  socket.on("join_room", (room) => {
+    socket.leave(socket.currentRoom);
+
+    socket.join(room);
+    socket.currentRoom = room;
+    console.log(`${socket.username} har gått med i rum: ${room}`);
   });
 
   // socket.io | socket.leave room.
-  socket.on("leave_room", (data) => {
-    socket.leave(username.room);
-    console.log(`User: ${username.data} har lämnat rum: ${data.room}`);
+  socket.on("leave_room", (room) => {
+    socket.leave(room);
+    console.log(`${socket.username} har lämnat rum: ${room}`);
   });
 
   // Användare och användarnamn.
   socket.on("username", (username) => {
     socket.username = username;
+    console.log(`Användare: ${socket.username} har anslutit`);
+    // Både username och socket.id kallas när jag startar servern.
   });
 
-  socket.on("message", (data) => {
-    console.log(
-      `User: ${username.data} har skickat meddelande: ${data.message}`
+  socket.on("message", (message) => {
+    console.log(`${socket.username} har skickat meddelande: ${message}`);
+
+    const timestamp = Date();
+
+    console.log(socket.currentRoom);
+
+    messageModel.addMessage(
+      message,
+      socket.username,
+      socket.currentRoom,
+      timestamp
     );
-    socket.broadcast.emit("message", data);
-    console.log(data);
+    console.log(socket.username, socket.currentRoom);
+
+    io.in(socket.currentRoom).emit("message", message);
+    // socket.emit(messageModel);
   });
 
   // socket.io | disconnect / avbryter.
   socket.on("disconnect", (reason) => {
-    console.log(
-      `Socket ${socket.id} avbröts / har lämnat. Anledning: ${reason}`
-    );
-  });
-
-  // Skapa rum med hjälp av socket.on.
-  socket.on("create_room", (room) => {
-    rooms[room] = {
-      name: room,
-      state: room,
-    };
-
-    console.log(rooms);
-  });
-
-  // Event: "update" uppdatera data till det nya rummet.
-  socket.on("update", (rooms) => {
-    const joinedRooms = Array.from(socket.rooms);
-    const currentRoom = joinedRooms[1];
-    const currentState = rooms[currentRoom].state;
-
-    io.emit(currentRoom).emit("updated_state", state);
+    console.log(`Servern avbröts. Anledning: ${reason}`);
   });
 });
 
 io.listen(4000);
 console.log("Servern körs på port 4000, tryck CTRL + C för att avsluta.");
-
-io.to("default").emit("new_message", {
-  id: "1",
-  message: "hej",
-  to: "default",
-});
