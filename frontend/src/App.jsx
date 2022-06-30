@@ -18,8 +18,6 @@ function App() {
     socket.on("connect", () => {
       socket.emit("ready");
       socket.emit("username", "aleks");
-      socket.emit("room");
-
       socket.on("message", (Data) => {
 
         setMessageData((PrevMessage) => [...PrevMessage, Data])
@@ -46,7 +44,7 @@ function App() {
 
   // Skicka meddelande.
   function handleMessage() {
-
+    console.log(message);
     socket.emit("message", message);
   }
 
@@ -62,11 +60,11 @@ function App() {
     socket.emit("leave_room", room);
   }
 
-  function deleteRoom(id, room) {
+  function deleteRoom(room) {
     console.log(room);
 
     socket.currentRoom = room;
-    socket.emit("delete_room", id, room);
+    socket.emit("delete_room", room);
 
     console.log(`${room} har raderats.`);
   }
@@ -80,7 +78,7 @@ function App() {
 
         <main className="App-body">
           <ul id="message">{messageData.map((message) => {
-            return <li key={message}>{message}</li>
+            return <li>{message}</li>
           })}</ul>
 
           <input id='message' type="text" value={message}

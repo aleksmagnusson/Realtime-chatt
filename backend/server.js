@@ -36,7 +36,6 @@ io.on("connection", (socket) => {
   // Skapa rum med hjälp av socket.on.
   socket.on("create_room", (room) => {
     console.log(`Rum "${room}" har skapats`);
-    socket.currentRoom = room;
 
     const timestamp = Date();
 
@@ -47,11 +46,10 @@ io.on("connection", (socket) => {
 
   // socket.io | socket.join room
   socket.on("join_room", (room) => {
-    socket.currentRoom = room;
-
     socket.leave(socket.currentRoom);
 
-    console.log(socket.currentRoom);
+    socket.join(room);
+    socket.currentRoom = room;
     console.log(`${socket.username} har gått med i rum: ${room}`);
   });
 
@@ -76,6 +74,13 @@ io.on("connection", (socket) => {
     console.log(`${socket.username} har lämnat ${socket.currentRoom}`);
   });
 
+  // Användare och användarnamn.
+  socket.on("username", (username) => {
+    socket.username = username;
+    console.log(`Användare: ${socket.username} har anslutit`);
+    // Både username och socket.id kallas när jag startar servern.
+  });
+
   // meddelanden
   socket.on("message", (message) => {
     console.log(`${socket.username} har skickat meddelande: ${message}`);
@@ -92,13 +97,6 @@ io.on("connection", (socket) => {
 
     io.in(socket.currentRoom).emit("message", message);
     // socket.emit(messageModel);
-  });
-
-  // Användare och användarnamn.
-  socket.on("username", (username) => {
-    socket.username = username;
-    console.log(`Användare: ${socket.username} har anslutit`);
-    // Både username och socket.id kallas när jag startar servern.
   });
 
   // socket.io | disconnect / avbryter.
