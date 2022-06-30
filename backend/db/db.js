@@ -6,8 +6,8 @@ const db = new sqlite3.Database("./sqlite.db", (error) => {
     throw error;
   }
 });
-// Får fel från "CREATE TABLE IF NOT EXISTS messages".
-// SQL error
+
+// SQL databas som hämtar tabell för id, meddelande, användare, rum och tid den skapades.
 const messageData = ` CREATE TABLE IF NOT EXISTS messages ( 
  id INTEGER PRIMARY KEY AUTOINCREMENT,
  message TEXT,
@@ -16,23 +16,30 @@ const messageData = ` CREATE TABLE IF NOT EXISTS messages (
  timestamp DATE
 )`;
 
+// Databas för rum som hämtar id, rum, tid den skapades.
+const roomData = ` CREATE TABLE IF NOT EXISTS rooms (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+rooms TEXT,
+timestamp DATE
+)`;
+
 // const userData = ` CREATE TABLE IF NOT EXISTS users (
 //  id INTEGER PRIMARY KEY AUTOINCREMENT,
 //  username TEXT PRIMARY KEY,
 //  current_room TEXT
 // )`;
 
-const roomData = ` CREATE TABLE IF NOT EXISTS rooms (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  timestamp DATE
-)`;
-
 db.run(messageData, (error) => {
   if (error) {
     console.error(error.message);
     throw error;
-  } else {
-    console.log("messageData databasen har blivit skapad");
+  }
+});
+
+db.run(roomData, (error) => {
+  if (error) {
+    console.error(error.message);
+    throw error;
   }
 });
 
@@ -44,14 +51,5 @@ db.run(messageData, (error) => {
 //    console.log("userData databasen har redan blivit skapad");
 //  }
 //});
-
-db.run(roomData, (error) => {
-  if (error) {
-    console.error(error.message);
-    throw error;
-  } else {
-    console.log("room databas har blivit skapad");
-  }
-});
 
 module.exports = db;

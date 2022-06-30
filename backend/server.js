@@ -36,43 +36,51 @@ io.on("connection", (socket) => {
   // Skapa rum med hjälp av socket.on.
   socket.on("create_room", (room) => {
     console.log(`Rum "${room}" har skapats`);
+    socket.currentRoom = room;
 
     const timestamp = Date();
 
     roomModel.addRoom(timestamp);
-
     // Kallar på rum och skriver ut rooms(?).
-    socket.emit("creat_room", rooms);
+    socket.emit("create_room", room);
   });
 
   // socket.io | socket.join room
   socket.on("join_room", (room) => {
+    socket.currentRoom = room;
+
     socket.leave(socket.currentRoom);
 
-    socket.join(room);
-    socket.currentRoom = room;
+    console.log(socket.currentRoom);
     console.log(`${socket.username} har gått med i rum: ${room}`);
   });
 
   // socket.io | socket.leave room.
   socket.on("leave_room", (room) => {
-    socket.leave(room);
-    console.log(`${socket.username} har lämnat rum: ${room}`);
+    socket.currentRoom = room;
+
+    console.log(room);
+    socket.leave(socket.currentRoom);
+    console.log(`${socket.username} har lämnat rum: ${socket.currentRoom}`);
   });
 
-  // Användare och användarnamn.
-  socket.on("username", (username) => {
-    socket.username = username;
-    console.log(`Användare: ${socket.username} har anslutit`);
-    // Både username och socket.id kallas när jag startar servern.
+  // socket.io | socket.delete room.
+  socket.on("delete_room", (room) => {
+    socket.currentRoom = room;
+
+    // Den "console.loggar" när man ansluter.
+    // console.log(room, socket.currentRoom);
+
+    roomModel.deleteRoom(socket.currentRoom);
+    io.emit("delete_room");
+    console.log(`${socket.username} har lämnat ${socket.currentRoom}`);
   });
 
+  // meddelanden
   socket.on("message", (message) => {
     console.log(`${socket.username} har skickat meddelande: ${message}`);
 
     const timestamp = Date();
-
-    console.log(socket.currentRoom);
 
     messageModel.addMessage(
       message,
@@ -80,10 +88,17 @@ io.on("connection", (socket) => {
       socket.currentRoom,
       timestamp
     );
-    console.log(socket.username, socket.currentRoom);
+    console.log(socket.username, "skickade", message);
 
     io.in(socket.currentRoom).emit("message", message);
     // socket.emit(messageModel);
+  });
+
+  // Användare och användarnamn.
+  socket.on("username", (username) => {
+    socket.username = username;
+    console.log(`Användare: ${socket.username} har anslutit`);
+    // Både username och socket.id kallas när jag startar servern.
   });
 
   // socket.io | disconnect / avbryter.

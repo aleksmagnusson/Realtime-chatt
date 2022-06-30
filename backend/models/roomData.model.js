@@ -17,10 +17,10 @@ function getRooms() {
 
 // GET ONE ROOM, INSERT INTO rooms (room) VALUES ?.
 
-function addRoom(timestamp) {
-  const sql = "INSERT INTO rooms (timestamp) VALUES (?)";
+function addRoom(timestamp, rooms) {
+  const sql = "INSERT INTO rooms (timestamp, rooms) VALUES (?, ?)";
   return new Promise((resolve, reject) => {
-    db.run(sql, [timestamp], (error) => {
+    db.run(sql, [timestamp, rooms], (error) => {
       if (error) {
         console.error(error.message);
         reject(error);
@@ -30,7 +30,23 @@ function addRoom(timestamp) {
   });
 }
 
+// DELETE rooms, ta bort ett rum.
+
+function deleteRoom(room) {
+  const sql = "DELETE from rooms WHERE rooms = (?)";
+  return new Promise((resolve, reject) => {
+    db.run(sql, [room], (error, rows) => {
+      if (error) {
+        console.error(error.message);
+        reject(error);
+      }
+      resolve(rows);
+    });
+  });
+}
+
 module.exports = {
   getRooms,
   addRoom,
+  deleteRoom,
 };
