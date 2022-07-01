@@ -1,4 +1,5 @@
 const express = require("express");
+const { fstat } = require("fs");
 const app = express();
 const port = 4000;
 const http = require("http");
@@ -6,6 +7,7 @@ const { Server } = require("socket.io");
 const server = http.createServer(app);
 const messageModel = require("./models/messageData.model");
 const roomModel = require("./models/roomData.model");
+const fs = require("fs");
 
 const rooms = {
   default: {
@@ -31,7 +33,32 @@ const io = new Server(server, {
 
 // socket connection / anslutning.
 io.on("connection", (socket) => {
-  console.log(`${socket.id} har anslutit`);
+  console.log(`${socket.id} har anslutit.`);
+
+  // Lägga till middleware.
+  // message, username, room och (timestamp Date())
+  socket.use(([event, ...args], next) => {
+    if (event === "message") {
+      console.log(event, args);
+
+      const data = JSON.stringify({
+        timestamp: Date(),
+        room: socket.currentRoom,
+        username: socket.username,
+        message: args[0],
+      });
+      console.log(data);
+      fs.writeFile("data_log.txt", data, { flag: "a" }, (error) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("data skrevs till data_log.txt");
+        }
+      });
+    }
+    console.log(event);
+    next();
+  });
 
   // Skapa rum med hjälp av socket.on.
   socket.on("create_room", (room) => {
@@ -55,48 +82,54 @@ io.on("connection", (socket) => {
 
   // socket.io | socket.leave room.
   socket.on("leave_room", (room) => {
-    socket.currentRoom = room;
+    socket.currentRoom = "";
 
-    console.log(room);
-    socket.leave(socket.currentRoom);
-    console.log(`${socket.username} har lämnat rum: ${socket.currentRoom}`);
+    socket.leave(room);
+    console.log(`${socket.username} har lämnat rum: ${room}`);
   });
 
   // socket.io | socket.delete room.
   socket.on("delete_room", (room) => {
-    socket.currentRoom = room;
+    socket.currentRoom = "";
 
     // Den "console.loggar" när man ansluter.
     // console.log(room, socket.currentRoom);
-
-    roomModel.deleteRoom(socket.currentRoom);
-    io.emit("delete_room");
-    console.log(`${socket.username} har lämnat ${socket.currentRoom}`);
+    roomModel.deleteRoom(room);
+    console.log(`${socket.username} har tagit bort ${room}.`);
   });
 
   // Användare och användarnamn.
   socket.on("username", (username) => {
     socket.username = username;
-    console.log(`Användare: ${socket.username} har anslutit`);
+    console.log(`Användare: ${socket.username} har anslutit.`);
     // Både username och socket.id kallas när jag startar servern.
   });
 
   // meddelanden
+  // message är en "string".
   socket.on("message", (message) => {
-    console.log(`${socket.username} har skickat meddelande: ${message}`);
+    // Koll om tomt meddelande.
+    if (!message || message.value.trim().length === 0) {
+      alert("Du kan inte skicka ett tomt meddelande!");
+    } else {
+      console.log(`${socket.username} har skickat meddelande: ${message}`);
 
-    const timestamp = Date();
+      const timestamp = Date();
 
-    messageModel.addMessage(
-      message,
-      socket.username,
-      socket.currentRoom,
-      timestamp
-    );
-    console.log(socket.username, "skickade", message);
+      messageModel.addMessage(
+        message,
+        socket.username,
+        socket.currentRoom,
+        timestamp
+      );
 
-    io.in(socket.currentRoom).emit("message", message);
-    // socket.emit(messageModel);
+      console.log(socket.username, "skickade", message);
+
+      io.in(socket.currentRoom).emit("message", {
+        message: message,
+        username: socket.username,
+      });
+    }
   });
 
   // socket.io | disconnect / avbryter.
