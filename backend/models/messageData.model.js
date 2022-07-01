@@ -35,7 +35,7 @@ function addMessage(message, username, rooms, timestamp) {
 // SELECT * FROM message WHERE currentRoom = ?
 
 function getRoomMessage(currentRoom) {
-  const sql = "SELECT * FROM message WHERE currentRoom = ?";
+  const sql = "SELECT * FROM message WHERE rooms = ?";
   return new Promise((resolve, reject) => {
     db.all(sql, [currentRoom], (error, rows) => {
       if (error) {
@@ -46,8 +46,22 @@ function getRoomMessage(currentRoom) {
   });
 }
 
+function deleteMessages(room) {
+  const sql = "DELETE from message WHERE rooms = ?";
+  return new Promise((resolve, reject) => {
+    db.run(sql, [room], (error, rows) => {
+      if (error) {
+        console.error(error.message);
+        reject(error);
+      }
+      resolve(rows);
+    });
+  });
+}
+
 module.exports = {
   getAllMessages,
   getRoomMessage,
   addMessage,
+  deleteMessages,
 };

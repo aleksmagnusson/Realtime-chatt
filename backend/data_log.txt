@@ -1,1 +1,15 @@
-{"timestamp":"Fri Jul 01 2022 14:30:58 GMT+0200 (centraleuropeisk sommartid)","message":"Hejsan!"}{"timestamp":"Fri Jul 01 2022 14:34:27 GMT+0200 (centraleuropeisk sommartid)","message":"Hejsan!"}{"timestamp":"Fri Jul 01 2022 14:38:13 GMT+0200 (centraleuropeisk sommartid)","message":"Hallå!"}{"timestamp":"Fri Jul 01 2022 14:42:37 GMT+0200 (centraleuropeisk sommartid)","room":"cerveca","username":"Oscar","message":"Hola, oscar una cerveca por favor"}{"timestamp":"Fri Jul 01 2022 14:45:40 GMT+0200 (centraleuropeisk sommartid)","username":"aleks","message":"Hejsan!"}{"timestamp":"Fri Jul 01 2022 14:46:05 GMT+0200 (centraleuropeisk sommartid)","room":"Frio","username":"Oscar","message":"Hejsan"}
+{"timestamp":"Fri Jul 01 2022 14:30:58 GMT+0200 (centraleuropeisk sommartid)","message":"Hejsan!"}
+{"timestamp":"Fri Jul 01 2022 14:34:27 GMT+0200 (centraleuropeisk sommartid)","message":"Hejsan!"}
+{"timestamp":"Fri Jul 01 2022 14:38:13 GMT+0200 (centraleuropeisk sommartid)","message":"Hallå!"}
+{"timestamp":"Fri Jul 01 2022 14:42:37 GMT+0200 (centraleuropeisk sommartid)","room":"cerveca","username":"Oscar","message":"Hola, oscar una cerveca por favor"}
+{"timestamp":"Fri Jul 01 2022 14:45:40 GMT+0200 (centraleuropeisk sommartid)","username":"aleks","message":"Hejsan!"}
+{"timestamp":"Fri Jul 01 2022 14:46:05 GMT+0200 (centraleuropeisk sommartid)","room":"Frio","username":"Oscar","message":"Hejsan"}
+{"username":"1","message":"Korv","room":"2","timestamp":"Fri Jul 01 2022 15:27:32 GMT+0200 (centraleuropeisk sommartid)"}
+{"username":"Apa","message":"","room":"Tiger","timestamp":"Fri Jul 01 2022 15:28:51 GMT+0200 (centraleuropeisk sommartid)"}
+{"username":"Apa","message":"Hejsan","room":"Tiger","timestamp":"Fri Jul 01 2022 15:29:45 GMT+0200 (centraleuropeisk sommartid)"}
+{"username":"Lejon","message":"hej","room":"Tiger","timestamp":"Fri Jul 01 2022 15:30:16 GMT+0200 (centraleuropeisk sommartid)"}
+{"username":"Lejon","message":"","room":"Tiger","timestamp":"Fri Jul 01 2022 15:30:21 GMT+0200 (centraleuropeisk sommartid)"}
+{"username":"Lejon","message":"","room":"Tiger","timestamp":"Fri Jul 01 2022 15:30:33 GMT+0200 (centraleuropeisk sommartid)"}
+{"username":"Lejon","message":"Hej","room":"Tiger","timestamp":"Fri Jul 01 2022 15:41:57 GMT+0200 (centraleuropeisk sommartid)"}
+{"username":"Oscar","message":"topp","room":"guldstjärna","timestamp":"Fri Jul 01 2022 15:44:10 GMT+0200 (centraleuropeisk sommartid)"}
+

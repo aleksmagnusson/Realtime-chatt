@@ -19,7 +19,7 @@ const messageData = ` CREATE TABLE IF NOT EXISTS messages (
 // Databas för rum som hämtar id, rum, tid den skapades.
 const roomData = ` CREATE TABLE IF NOT EXISTS rooms (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
-rooms TEXT,
+rooms TEXT UNIQUE,
 timestamp DATE
 )`;
 

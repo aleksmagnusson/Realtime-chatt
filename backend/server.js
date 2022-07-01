@@ -42,12 +42,12 @@ io.on("connection", (socket) => {
       console.log(event, args);
 
       const data = JSON.stringify({
-        timestamp: Date(),
-        room: socket.currentRoom,
         username: socket.username,
         message: args[0],
+        room: socket.currentRoom,
+        timestamp: Date(),
       });
-      console.log(data);
+
       fs.writeFile("data_log.txt", data, { flag: "a" }, (error) => {
         if (error) {
           console.log(error);
@@ -56,7 +56,6 @@ io.on("connection", (socket) => {
         }
       });
     }
-    console.log(event);
     next();
   });
 
@@ -66,7 +65,7 @@ io.on("connection", (socket) => {
 
     const timestamp = Date();
 
-    roomModel.addRoom(timestamp);
+    roomModel.addRoom(timestamp, room);
     // Kallar på rum och skriver ut rooms(?).
     socket.emit("create_room", room);
   });
@@ -95,6 +94,7 @@ io.on("connection", (socket) => {
     // Den "console.loggar" när man ansluter.
     // console.log(room, socket.currentRoom);
     roomModel.deleteRoom(room);
+    messageModel.deleteMessages(room);
     console.log(`${socket.username} har tagit bort ${room}.`);
   });
 
@@ -109,8 +109,8 @@ io.on("connection", (socket) => {
   // message är en "string".
   socket.on("message", (message) => {
     // Koll om tomt meddelande.
-    if (!message || message.value.trim().length === 0) {
-      alert("Du kan inte skicka ett tomt meddelande!");
+    if (message.length === 0) {
+      console.log("Du kan inte skicka ett tomt meddelande!");
     } else {
       console.log(`${socket.username} har skickat meddelande: ${message}`);
 
